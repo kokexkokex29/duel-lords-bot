@@ -8,8 +8,13 @@ def start_web_server():
     """Start the web dashboard server"""
     import time
     time.sleep(3)  # Wait a bit before starting web server
-    from web.app import app
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
+    try:
+        from web.app import app
+        # Use PORT from environment (Render assigns this)
+        port = int(os.environ.get('PORT', 5000))
+        app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+    except Exception as e:
+        print(f"Web server error: {e}")
 
 def main():
     """Main entry point for the Duel Lords bot"""
@@ -31,17 +36,44 @@ def main():
     # Create and run the bot with rate limit handling
     bot = DuelLordsBot()
     
+    # Bot with retry mechanism for rate limits
+    max_retries = 3
+    retry_count = 0
+    
+    while retry_count < max_retries:
+        try:
+            print(f"🚀 Starting Duel Lords Bot... (Attempt {retry_count + 1})")
+            asyncio.run(bot.start(discord_token))
+            break  # If successful, exit the loop
+        except KeyboardInterrupt:
+            print("\n⏹️ Bot stopped by user")
+            break
+        except Exception as e:
+            retry_count += 1
+            if "429" in str(e) or "rate limit" in str(e).lower():
+                print(f"⏳ Bot rate limited by Discord (Attempt {retry_count}/{max_retries})")
+                if retry_count < max_retries:
+                    print("💡 Waiting 60 seconds before retry...")
+                    import time
+                    time.sleep(60)
+                else:
+                    print("💡 Max retries reached. Bot will stay alive with web server.")
+            else:
+                print(f"❌ Error running bot: {e}")
+                if retry_count < max_retries:
+                    print("🔄 Retrying in 30 seconds...")
+                    import time
+                    time.sleep(30)
+                break
+    
+    # Keep the process alive for the web server
+    print("✅ Web server is running. Application will stay alive.")
     try:
-        print("🚀 Starting Duel Lords Bot...")
-        asyncio.run(bot.start(discord_token))
+        while True:
+            import time
+            time.sleep(60)
     except KeyboardInterrupt:
-        print("\n⏹️ Bot stopped by user")
-    except Exception as e:
-        if "429" in str(e):
-            print("⏳ Bot rate limited by Discord. This is temporary.")
-            print("💡 The bot will reconnect automatically when rate limit resets.")
-        else:
-            print(f"❌ Error running bot: {e}")
+        print("\n⏹️ Application stopped by user")
 
 if __name__ == "__main__":
     main()
