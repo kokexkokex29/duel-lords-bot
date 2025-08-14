@@ -6,6 +6,8 @@ from keep_alive import keep_alive
 
 def start_web_server():
     """Start the web dashboard server"""
+    import time
+    time.sleep(3)  # Wait a bit before starting web server
     from web.app import app
     app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
 
@@ -26,7 +28,7 @@ def main():
         print("Please set your Discord bot token in the environment variables.")
         return
     
-    # Create and run the bot
+    # Create and run the bot with rate limit handling
     bot = DuelLordsBot()
     
     try:
@@ -35,7 +37,11 @@ def main():
     except KeyboardInterrupt:
         print("\n⏹️ Bot stopped by user")
     except Exception as e:
-        print(f"❌ Error running bot: {e}")
+        if "429" in str(e):
+            print("⏳ Bot rate limited by Discord. This is temporary.")
+            print("💡 The bot will reconnect automatically when rate limit resets.")
+        else:
+            print(f"❌ Error running bot: {e}")
 
 if __name__ == "__main__":
     main()
