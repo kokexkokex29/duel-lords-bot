@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Leaderboard - Duel Lords</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top luxury-nav">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i class="fas fa-crown text-warning me-2"></i>
+                Duel Lords
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('leaderboard') }}">
+                            <i class="fas fa-trophy me-1"></i>Leaderboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#server-info">
+                            <i class="fas fa-server me-1"></i>Server
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Leaderboard Header -->
+    <section class="leaderboard-header">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <h1 class="display-3 fw-bold mb-4 text-gradient">
+                        <i class="fas fa-trophy text-warning me-3"></i>
+                        Tournament Leaderboard
+                    </h1>
+                    <p class="lead mb-4 text-light">
+                        Rise through the ranks and claim your place among the elite fighters!
+                    </p>
+                    <div class="leaderboard-stats">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="stat-badge">
+                                    <i class="fas fa-users"></i>
+                                    <span>{{ tournament_stats.total_players or 0 }} Fighters</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-badge">
+                                    <i class="fas fa-fire"></i>
+                                    <span>{{ tournament_stats.total_kills or 0 }} Total Kills</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-badge">
+                                    <i class="fas fa-sword"></i>
+                                    <span>{{ tournament_stats.completed_duels or 0 }} Duels</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-badge">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>{{ tournament_stats.total_matches or 0 }} Matches</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sorting Controls -->
+    <section class="py-4 bg-dark">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h4 class="text-light mb-0">
+                        <i class="fas fa-sort me-2"></i>
+                        Sort Rankings
+                    </h4>
+                </div>
+                <div class="col-md-6">
+                    <div class="sort-controls">
+                        <button class="btn btn-outline-light sort-btn active" data-sort="wins">
+                            <i class="fas fa-trophy me-1"></i>Wins
+                        </button>
+                        <button class="btn btn-outline-light sort-btn" data-sort="win_rate">
+                            <i class="fas fa-percent me-1"></i>Win Rate
+                        </button>
+                        <button class="btn btn-outline-light sort-btn" data-sort="kills">
+                            <i class="fas fa-skull me-1"></i>Kills
+                        </button>
+                        <button class="btn btn-outline-light sort-btn" data-sort="kd_ratio">
+                            <i class="fas fa-crosshairs me-1"></i>K/D Ratio
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section class="py-5 bg-gradient">
+        <div class="container">
+            {% if leaderboard %}
+            <div class="leaderboard-container">
+                <!-- Top 3 Podium -->
+                {% set top_3 = leaderboard[:3] %}
+                {% if top_3|length >= 3 %}
+                <div class="podium-section mb-5">
+                    <div class="row justify-content-center">
+                        <!-- 2nd Place -->
+                        <div class="col-lg-4 order-lg-1 order-2">
+                            <div class="podium-card silver">
+                                <div class="podium-rank">
+                                    <i class="fas fa-medal silver-medal"></i>
+                                    <span class="rank-number">2</span>
+                                </div>
+                                <div class="podium-content">
+                                    <h4 class="fighter-name">{{ top_3[1].display_name }}</h4>
+                                    <div class="fighter-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-trophy text-warning"></i>
+                                            <span>{{ top_3[1].wins }} Wins</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-percent text-info"></i>
+                                            <span>{{ "%.1f"|format(top_3[1].win_rate) }}%</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-fire text-danger"></i>
+                                            <span>{{ top_3[1].kills }} Kills</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 1st Place -->
+                        <div class="col-lg-4 order-lg-2 order-1">
+                            <div class="podium-card gold champion">
+                                <div class="podium-rank">
+                                    <i class="fas fa-crown crown-icon"></i>
+                                    <span class="rank-number">1</span>
+                                </div>
+                                <div class="podium-content">
+                                    <h3 class="fighter-name">{{ top_3[0].display_name }}</h3>
+                                    <div class="champion-badge">
+                                        <i class="fas fa-star"></i>
+                                        <span>CHAMPION</span>
+                                    </div>
+                                    <div class="fighter-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-trophy text-warning"></i>
+                                            <span>{{ top_3[0].wins }} Wins</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-percent text-info"></i>
+                                            <span>{{ "%.1f"|format(top_3[0].win_rate) }}%</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-fire text-danger"></i>
+                                            <span>{{ top_3[0].kills }} Kills</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 3rd Place -->
+                        <div class="col-lg-4 order-lg-3 order-3">
+                            <div class="podium-card bronze">
+                                <div class="podium-rank">
+                                    <i class="fas fa-medal bronze-medal"></i>
+                                    <span class="rank-number">3</span>
+                                </div>
+                                <div class="podium-content">
+                                    <h4 class="fighter-name">{{ top_3[2].display_name }}</h4>
+                                    <div class="fighter-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-trophy text-warning"></i>
+                                            <span>{{ top_3[2].wins }} Wins</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-percent text-info"></i>
+                                            <span>{{ "%.1f"|format(top_3[2].win_rate) }}%</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-fire text-danger"></i>
+                                            <span>{{ top_3[2].kills }} Kills</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Full Rankings Table -->
+                <div class="rankings-table">
+                    <h3 class="text-center mb-4">
+                        <i class="fas fa-list-ol text-primary me-2"></i>
+                        Complete Rankings
+                    </h3>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover luxury-table" id="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th>Fighter</th>
+                                    <th class="text-center">Wins</th>
+                                    <th class="text-center">Losses</th>
+                                    <th class="text-center">Draws</th>
+                                    <th class="text-center">Win Rate</th>
+                                    <th class="text-center">Kills</th>
+                                    <th class="text-center">Deaths</th>
+                                    <th class="text-center">K/D Ratio</th>
+                                    <th class="text-center">Matches</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboard-body">
+                                {% for player in leaderboard %}
+                                <tr class="fighter-row" data-wins="{{ player.wins }}" data-win-rate="{{ player.win_rate }}" data-kills="{{ player.kills }}" data-kd-ratio="{{ player.kd_ratio }}">
+                                    <td class="text-center">
+                                        {% if loop.index == 1 %}
+                                            <i class="fas fa-crown text-warning"></i>
+                                        {% elif loop.index == 2 %}
+                                            <i class="fas fa-medal" style="color: #C0C0C0;"></i>
+                                        {% elif loop.index == 3 %}
+                                            <i class="fas fa-medal" style="color: #CD7F32;"></i>
+                                        {% else %}
+                                            {{ loop.index }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="fighter-info">
+                                            <strong class="fighter-name">{{ player.display_name }}</strong>
+                                            {% if player.wins >= 25 %}
+                                                <span class="badge bg-danger ms-2">Master</span>
+                                            {% elif player.wins >= 10 %}
+                                                <span class="badge bg-warning ms-2">Veteran</span>
+                                            {% elif player.win_rate >= 80 and player.total_matches >= 5 %}
+                                                <span class="badge bg-info ms-2">Elite</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value text-success">{{ player.wins }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value text-danger">{{ player.losses }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value text-warning">{{ player.draws }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value">{{ "%.1f"|format(player.win_rate) }}%</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value text-danger">{{ player.kills }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value">{{ player.deaths }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value">{{ "%.2f"|format(player.kd_ratio) }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="stat-value">{{ player.total_matches }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- Empty State -->
+            <div class="empty-state text-center">
+                <div class="empty-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h3 class="empty-title">No Fighters Yet</h3>
+                <p class="empty-description">
+                    The tournament is waiting for brave warriors to join the battle!
+                    <br>
+                    Administrators can register players using the <code>/register</code> command.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Recent Activity -->
+    {% if recent_duels %}
+    <section class="py-5 bg-dark text-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="text-center mb-4">
+                        <i class="fas fa-history text-info me-2"></i>
+                        Recent Tournament Activity
+                    </h3>
+                    <div class="activity-timeline">
+                        {% for duel in recent_duels[:5] %}
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-sword"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h5 class="activity-title">
+                                    {{ duel.player1_name }} vs {{ duel.player2_name }}
+                                </h5>
+                                <p class="activity-description">
+                                    Epic duel {{ duel.status }}
+                                    {% if duel.created_at %}
+                                        <span class="text-muted ms-2">{{ duel.created_at }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-crown text-warning me-2"></i>
+                        Duel Lords Tournament
+                    </h5>
+                    <p class="mb-0">Climb the leaderboard and become the ultimate champion!</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-2">
+                        <i class="fas fa-sync-alt text-info me-2"></i>
+                        Last Updated: <span id="last-updated">Now</span>
+                    </p>
+                    <p class="mb-0 text-muted">
+                        <i class="fas fa-server me-2"></i>
+                        Server: 18.228.228.44:3827
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Leaderboard sorting functionality
+        const sortButtons = document.querySelectorAll('.sort-btn');
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        
+        sortButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                sortButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Sort the table
+                const sortBy = this.getAttribute('data-sort');
+                sortLeaderboard(sortBy);
+            });
+        });
+        
+        function sortLeaderboard(criteria) {
+            const rows = Array.from(leaderboardBody.querySelectorAll('.fighter-row'));
+            
+            rows.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch(criteria) {
+                    case 'wins':
+                        aValue = parseInt(a.getAttribute('data-wins'));
+                        bValue = parseInt(b.getAttribute('data-wins'));
+                        break;
+                    case 'win_rate':
+                        aValue = parseFloat(a.getAttribute('data-win-rate'));
+                        bValue = parseFloat(b.getAttribute('data-win-rate'));
+                        break;
+                    case 'kills':
+                        aValue = parseInt(a.getAttribute('data-kills'));
+                        bValue = parseInt(b.getAttribute('data-kills'));
+                        break;
+                    case 'kd_ratio':
+                        aValue = parseFloat(a.getAttribute('data-kd-ratio'));
+                        bValue = parseFloat(b.getAttribute('data-kd-ratio'));
+                        break;
+                    default:
+                        return 0;
+                }
+                
+                return bValue - aValue; // Descending order
+            });
+            
+            // Update rank numbers and icons
+            rows.forEach((row, index) => {
+                const rankCell = row.querySelector('td:first-child');
+                if (index === 0) {
+                    rankCell.innerHTML = '<i class="fas fa-crown text-warning"></i>';
+                } else if (index === 1) {
+                    rankCell.innerHTML = '<i class="fas fa-medal" style="color: #C0C0C0;"></i>';
+                } else if (index === 2) {
+                    rankCell.innerHTML = '<i class="fas fa-medal" style="color: #CD7F32;"></i>';
+                } else {
+                    rankCell.innerHTML = index + 1;
+                }
+                
+                leaderboardBody.appendChild(row);
+            });
+        }
+        
+        // Auto-refresh leaderboard every 60 seconds
+        function refreshLeaderboard() {
+            const lastUpdated = document.getElementById('last-updated');
+            const now = new Date();
+            lastUpdated.textContent = now.toLocaleTimeString();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setInterval(refreshLeaderboard, 60000); // Update every minute
+        });
+    </script>
+</body>
+</html>

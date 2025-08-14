@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duel Lords Tournament - BombSquad Championship</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top luxury-nav">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                <i class="fas fa-crown text-warning me-2"></i>
+                Duel Lords
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('index') }}">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('leaderboard') }}">
+                            <i class="fas fa-trophy me-1"></i>Leaderboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#server-info">
+                            <i class="fas fa-server me-1"></i>Server
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <h1 class="display-2 fw-bold mb-4 text-gradient">
+                            <i class="fas fa-crown text-warning me-3"></i>
+                            Duel Lords
+                        </h1>
+                        <p class="lead mb-5 text-light">
+                            The ultimate BombSquad tournament experience with luxury features, 
+                            real-time statistics, and epic duel management.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="{{ url_for('leaderboard') }}" class="btn btn-luxury btn-lg me-3">
+                                <i class="fas fa-trophy me-2"></i>View Leaderboard
+                            </a>
+                            <a href="#features" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-info-circle me-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Cards -->
+    <section class="py-5 bg-dark">
+        <div class="container">
+            <div class="row g-4" id="stats-cards">
+                <!-- Stats will be loaded dynamically -->
+                <div class="col-md-3">
+                    <div class="status-card">
+                        <div class="status-icon bg-success">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="status-content">
+                            <h3 class="status-title">Bot Status</h3>
+                            <p class="status-value text-success fw-bold">
+                                <i class="fas fa-circle pulse-animation me-2"></i>Online
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="status-card">
+                        <div class="status-icon bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="status-content">
+                            <h3 class="status-title">Total Fighters</h3>
+                            <p class="status-value" id="total-players">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="status-card">
+                        <div class="status-icon bg-warning">
+                            <i class="fas fa-sword"></i>
+                        </div>
+                        <div class="status-content">
+                            <h3 class="status-title">Total Duels</h3>
+                            <p class="status-value" id="total-duels">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="status-card">
+                        <div class="status-icon bg-danger">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="status-content">
+                            <h3 class="status-title">Total Kills</h3>
+                            <p class="status-value" id="total-kills">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-gradient">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-4 fw-bold mb-3">
+                        <i class="fas fa-star text-warning me-3"></i>
+                        Premium Features
+                    </h2>
+                    <p class="lead text-muted">Experience the most advanced Discord tournament bot</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-primary">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">Admin Controls</h4>
+                            <p class="feature-description">
+                                Complete administrative control with player registration, 
+                                statistics updates, and tournament management.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-success">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">Duel Scheduling</h4>
+                            <p class="feature-description">
+                                Advanced scheduling system with automatic reminders, 
+                                Discord timestamps, and private notifications.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-warning">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">Live Statistics</h4>
+                            <p class="feature-description">
+                                Real-time player statistics tracking with wins, losses, 
+                                kills, deaths, and performance analytics.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-danger">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">Tournament Leaderboard</h4>
+                            <p class="feature-description">
+                                Dynamic leaderboard with multiple sorting options, 
+                                achievements system, and ranking progression.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-info">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">Smart Reminders</h4>
+                            <p class="feature-description">
+                                Intelligent reminder system with 5-minute warnings, 
+                                personalized messages, and motivational quotes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card h-100">
+                        <div class="feature-icon bg-secondary">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="feature-content">
+                            <h4 class="feature-title">Multi-Language</h4>
+                            <p class="feature-description">
+                                Full support for English and Portuguese languages 
+                                with seamless translation system.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Server Information -->
+    <section id="server-info" class="py-5 bg-dark text-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="display-5 fw-bold mb-4">
+                        <i class="fas fa-server text-primary me-3"></i>
+                        BombSquad Server
+                    </h2>
+                    <p class="lead mb-4">
+                        Connect to our official tournament server and join the battle!
+                    </p>
+                    <div class="server-details">
+                        <div class="server-detail-item">
+                            <i class="fas fa-network-wired text-success me-3"></i>
+                            <strong>IP Address:</strong> 
+                            <span class="text-warning ms-2 fw-bold">18.228.228.44</span>
+                        </div>
+                        <div class="server-detail-item">
+                            <i class="fas fa-plug text-info me-3"></i>
+                            <strong>Port:</strong> 
+                            <span class="text-warning ms-2 fw-bold">3827</span>
+                        </div>
+                        <div class="server-detail-item">
+                            <i class="fas fa-circle text-success me-3 pulse-animation"></i>
+                            <strong>Status:</strong> 
+                            <span class="text-success ms-2 fw-bold">Online & Ready</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="connection-guide">
+                        <h4 class="mb-3">
+                            <i class="fas fa-question-circle text-warning me-2"></i>
+                            How to Connect
+                        </h4>
+                        <ol class="connection-steps">
+                            <li>Open BombSquad on your device</li>
+                            <li>Navigate to <strong>Play → Network → Connect by Address</strong></li>
+                            <li>Enter IP: <code>18.228.228.44</code></li>
+                            <li>Enter Port: <code>3827</code></li>
+                            <li>Click <strong>Connect</strong> and join the tournament!</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Commands Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold mb-3">
+                        <i class="fas fa-terminal text-primary me-3"></i>
+                        Discord Commands
+                    </h2>
+                    <p class="lead text-muted">Master the tournament with these powerful slash commands</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="command-category">
+                        <h4 class="command-category-title">
+                            <i class="fas fa-crown text-warning me-2"></i>
+                            Admin Commands
+                        </h4>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code>/register</code>
+                                <span>Register new players</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/remove</code>
+                                <span>Remove players</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/update</code>
+                                <span>Update player stats</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/duel</code>
+                                <span>Schedule epic duels</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="command-category">
+                        <h4 class="command-category-title">
+                            <i class="fas fa-users text-success me-2"></i>
+                            Player Commands
+                        </h4>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code>/stats</code>
+                                <span>View detailed statistics</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/leaderboard</code>
+                                <span>Tournament rankings</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/fighters</code>
+                                <span>View all fighters</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/compare</code>
+                                <span>Compare two players</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="command-category">
+                        <h4 class="command-category-title">
+                            <i class="fas fa-gamepad text-info me-2"></i>
+                            General Commands
+                        </h4>
+                        <div class="command-list">
+                            <div class="command-item">
+                                <code>/ip</code>
+                                <span>Server connection info</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/duels</code>
+                                <span>Upcoming scheduled duels</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/kill</code>
+                                <span>Kill leaderboard</span>
+                            </div>
+                            <div class="command-item">
+                                <code>/tournament_info</code>
+                                <span>Complete tournament details</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-3">
+                        <i class="fas fa-crown text-warning me-2"></i>
+                        Duel Lords Tournament
+                    </h5>
+                    <p class="mb-0">The ultimate BombSquad tournament experience with premium features.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-2">
+                        <i class="fas fa-server text-success me-2"></i>
+                        Bot Status: <span class="text-success fw-bold">Online</span>
+                    </p>
+                    <p class="mb-0 text-muted">
+                        <i class="fas fa-code me-2"></i>
+                        Built with Python & Discord.py
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Load tournament statistics
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('total-players').textContent = stats.total_players || '0';
+                document.getElementById('total-duels').textContent = stats.total_duels || '0';
+                document.getElementById('total-kills').textContent = stats.total_kills || '0';
+            } catch (error) {
+                console.error('Failed to load statistics:', error);
+                document.getElementById('total-players').textContent = '0';
+                document.getElementById('total-duels').textContent = '0';
+                document.getElementById('total-kills').textContent = '0';
+            }
+        }
+
+        // Auto-refresh stats every 30 seconds
+        function startStatsRefresh() {
+            loadStats();
+            setInterval(loadStats, 30000);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            startStatsRefresh();
+        });
+    </script>
+</body>
+</html>
