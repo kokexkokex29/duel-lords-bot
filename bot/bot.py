@@ -46,12 +46,19 @@ class DuelLordsBot(commands.Bot):
         # Start scheduler
         self.scheduler_task.start()
         
-        # Sync slash commands
-        try:
-            synced = await self.tree.sync()
-            print(f"✅ Synced {len(synced)} slash commands")
-        except Exception as e:
-            print(f"❌ Failed to sync commands: {e}")
+        # Sync slash commands (only once)
+        if not hasattr(self, '_commands_synced'):
+            try:
+                synced = await self.tree.sync()
+                print(f"✅ Synced {len(synced)} slash commands")
+                self._commands_synced = True
+            except discord.HTTPException as e:
+                if e.status == 429:  # Rate limited
+                    print(f"⏳ Rate limited, skipping command sync")
+                else:
+                    print(f"❌ Failed to sync commands: {e}")
+            except Exception as e:
+                print(f"❌ Failed to sync commands: {e}")
     
     async def on_ready(self):
         """Called when bot is ready"""
